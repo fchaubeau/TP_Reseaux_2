@@ -69,22 +69,12 @@ public class WebServer {
           case "GET" : 
             processGetMethod(path, remote);
             break;
+          case "POST" :
+            processPostMethod(path,remote);
           default :
           break;
         }
 
-        /*// Basic response
-        // Send the response
-        // Send the headers
-        out.println("HTTP/1.0 200 OK");
-        out.println("Content-Type: text/html");
-        out.println("Server: Bot");
-        // this blank line signals the end of the headers
-        out.println("");
-        // Send the HTML page
-        out.println("<H1>Welcome to the Ultra Mini-WebServer</H2>");
-        out.flush();
-        // End of basic response*/
         out.flush();
         remote.close();
       } catch (Exception e) {
@@ -99,11 +89,14 @@ public class WebServer {
     if(Files.exists(filePath)){
       String contentType = Files.probeContentType(filePath);
       sendResponse(client, "200 OK", contentType, Files.readAllBytes(filePath));
-      System.out.println("aaaa");
     } else {
       byte[] notFound = "<p>Error 404, page not found<p>".getBytes();
       sendResponse(client,"404 Not Found", "text/html", notFound);
     }
+  }
+
+  public void processPostMethod(String path, Socket client) throws IOException{
+    
   }
 
   protected void sendResponse(Socket client, String code, String type, byte[] content){
@@ -114,42 +107,22 @@ public class WebServer {
       String goodDate = format.format(currentDate).toString();
       out.print("HTTP/1.0 ");
       out.println(code);
-      out.println(type);
-      out.println(goodDate);
+      out.println("Date:" + goodDate);
+      out.println("Content-Type:" + type);
       out.println("");
       out.println(new String(content));
+      System.out.print("HTTP/1.0 ");
+      System.out.println(code);
+      System.out.println(type);
+      System.out.println(goodDate);
+      System.out.println("");
+      System.out.println(new String(content));
       out.flush();
     } catch (Exception e) {
       System.out.println("Error: " + e);
     }
 
   }
-
-  /*private static void GETRequest(String path, Socket client) throws IOException {
-    if (path.equals("/")) {
-      // Liste toutes les ressources
-      String res = "<h1>Liste des ressources : </h1><ul>";
-      File directoryPath = new File("./http/ressources");
-      String[] files = directoryPath.list();
-      for (String file : files) {
-          res += "<li><a href=\"/" + file + "\">" + file + "</a>" + "</li>";
-      }
-      res += "</ul>";
-      sendResponse(client, "200 OK", "text/html", res.getBytes());
-    }
-    else {
-        Path filePath = getFilePath(path);
-        if (Files.exists(filePath)) {
-            // Le fichier existe
-            String contentType = guessContentType(filePath);
-            sendResponse(client, "200 OK", contentType, Files.readAllBytes(filePath));
-        } else {
-            // Le fichier n'existe pas : 404
-            byte[] notFoundContent = "<h1>Not found :(</h1>".getBytes();
-            sendResponse(client, "404 Not Found", "text/html", notFoundContent);
-        }
-    }
-  }*/
 
   /**
    * Start the application.
