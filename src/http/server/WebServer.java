@@ -11,6 +11,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.nio.file.*;
+import java.io.*;
 
 /**
  * Example program from Chapter 1 Programming Spiders, Bots and Aggregators in
@@ -66,11 +67,11 @@ public class WebServer {
         System.out.println(request);
         String [] splittedRequest = request.split(" ");
         String method = splittedRequest[0];
-        String path = splittedRequest[1];
+        String path = "../" + splittedRequest[1];
 
         switch(method){
           case "GET" : 
-            processGetMethod(path, remote, out);
+            processGetMethod(path, remote);
             break;
           default :
           break;
@@ -88,7 +89,7 @@ public class WebServer {
         out.println("<H1>Welcome to the Ultra Mini-WebServer</H2>");
         out.flush();
         // End of basic response*/
-
+        out.flush();
         remote.close();
       } catch (Exception e) {
         System.out.println("Error: " + e);
@@ -96,23 +97,35 @@ public class WebServer {
     }
   }
 
-  public void processGetMethod(String path, Socket client, PrintWriter out){
-    out.println("HTTP/1.0 200 OK");
-    DateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-    Date currentDate = Calendar.getInstance().getTime();
-    out.println("Date: " + format.format(currentDate));
-    out.println("Content-Type: text/html; charset=UTF-8");
-    out.println("Content-Encoding: UTF-8");
-    // this blank line signals the end of the headers
-    out.println("");
-    // Send the HTML page
+  public void processGetMethod(String path, Socket client) throws IOException{
     Path filePath = Paths.get(path);
+    System.out.println(filePath);
     if(Files.exists(filePath)){
-
+      String contentType = Files.probeContentType(filePath);
+      sendResponse(client, "200 OK", contentType, Files.readAllBytes(filePath));
+      System.out.println("aaaa");
+    } else {
+      byte[] notFound = "<p>Error 404, page not found<p>".getBytes();
+      sendResponse(client,"404 Not Found", "text/html", notFound);
     }
-    out.println("<H1>Welcome to the Ultra Mini-WebServer</H2>");
-    out.println("<p>Je l'ai un peu modifie ! </p>");
-    out.flush();
+  }
+
+  protected void sendResponse(Socket client, String code, String type, byte[] content){
+    try{
+      PrintWriter out = new PrintWriter(client.getOutputStream());
+      DateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+      Date currentDate = Calendar.getInstance().getTime();
+      String goodDate = format.format(currentDate).toString();
+      out.print("HTTP/1.0 ");
+      out.println(code);
+      out.println(type);
+      out.println(goodDate);
+      out.println("");
+      out.println(new String(content));
+      out.flush();
+    } catch (Exception e) {
+      System.out.println("Error: " + e);
+    }
 
   }
 
