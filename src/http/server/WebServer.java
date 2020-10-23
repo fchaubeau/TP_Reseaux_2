@@ -83,6 +83,7 @@ public class WebServer {
             data.append(buffer, 0, charsIn);
             String strData = data.toString(); 
             processPostMethod(strData,remote);
+            break;
           default :
           break;
         }
