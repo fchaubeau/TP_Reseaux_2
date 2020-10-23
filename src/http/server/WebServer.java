@@ -58,7 +58,6 @@ public class WebServer {
           str = in.readLine();
           request += str;
           request += '\n';
-          //System.out.println(str);
         }
         System.out.println(request);
         String [] splittedRequest = request.split(" ");
@@ -70,7 +69,20 @@ public class WebServer {
             processGetMethod(path, remote);
             break;
           case "POST" :
-            processPostMethod(path,remote);
+            int contentLength= 0;
+            for(int i = 0; i < splittedRequest.length; i++){
+              if(splittedRequest[i].contains("Content-Length")){
+                String strContentLength = splittedRequest[i+1];
+                strContentLength = strContentLength.substring(0,strContentLength.length()-2);
+                contentLength = Integer.parseInt(strContentLength);
+              }
+            }
+            char [] buffer = new char[contentLength];
+            int charsIn = in.read(buffer, 0, contentLength);
+            StringBuilder data = new StringBuilder(charsIn);
+            data.append(buffer, 0, charsIn);
+            String strData = data.toString(); 
+            processPostMethod(strData,remote);
           default :
           break;
         }
@@ -95,7 +107,8 @@ public class WebServer {
     }
   }
 
-  public void processPostMethod(String path, Socket client) throws IOException{
+  public void processPostMethod(String data, Socket client) throws IOException{
+    System.out.println(data);
     
   }
 
