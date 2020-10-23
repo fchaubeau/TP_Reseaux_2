@@ -129,14 +129,9 @@ public class WebServer {
       out.println(code);
       out.println("Date:" + goodDate);
       out.println("Content-Type:" + type);
+      out.println("Content-Length:" + content.length);
       out.println("");
       out.println(new String(content));
-      System.out.print("HTTP/1.0 ");
-      System.out.println(code);
-      System.out.println(type);
-      System.out.println(goodDate);
-      System.out.println("");
-      System.out.println(new String(content));
       out.flush();
     } catch (Exception e) {
       System.out.println("Error: " + e);
