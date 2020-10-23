@@ -101,7 +101,8 @@ public class WebServer {
     System.out.println(filePath);
     if(Files.exists(filePath)){
       String contentType = Files.probeContentType(filePath);
-      sendResponse(client, "200 OK", contentType, Files.readAllBytes(filePath));
+      Base64.Decoder base = Base64.getDecoder();
+      sendResponse(client, "200 OK", contentType, Files.readAllBytes(base.decode(filePath)));
     } else {
       byte[] notFound = "<p>Error 404, page not found<p>".getBytes();
       sendResponse(client,"404 Not Found", "text/html", notFound);
