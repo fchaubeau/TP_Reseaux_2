@@ -109,7 +109,13 @@ public class WebServer {
   }
 
   public void processPostMethod(String data, Socket client) throws IOException{
-    System.out.println(data);
+    if(data != null){
+      System.out.println(data);
+      sendResponse(client,"200 OK", "text/html", ("<p>Data Received by server<p/>").getBytes());
+    }
+    else{
+      sendResponse(client,"200 OK", "text/html", ("<p>Empty Post method received<p/>").getBytes());
+    }
     
   }
 
